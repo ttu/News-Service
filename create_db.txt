@@ -1,0 +1,41 @@
+DROP TABLE User;
+DROP TABLE Feed;
+DROP TABLE News;
+DROP TABLE Vote;
+
+CREATE TABLE User(
+ID int PRIMARY KEY AUTO_INCREMENT,
+Username varchar(255) NOT NULL,
+Password varchar(255) NOT NULL
+);
+
+CREATE TABLE Feed(
+ID int PRIMARY KEY AUTO_INCREMENT,
+Name varchar(255) NOT NULL,
+Url varchar(255) NOT NULL
+);
+
+CREATE TABLE News(
+ID int PRIMARY KEY AUTO_INCREMENT,
+Title varchar(255) NOT NULL,
+Url varchar(255) NOT NULL,
+FeedID int NOT NULL,
+Date datetime NOT NULL,
+CONSTRAINT Feed_fk FOREIGN KEY(FeedID)
+REFERENCES Feed(ID)
+);
+
+CREATE TABLE Vote(
+UserID nvarchar(255) NOT NULL,
+NewsID int NOT NULL,
+Rate bool NOT NULL,
+Date datetime NOT NULL,
+PRIMARY KEY (UserID, NewsID),
+CONSTRAINT User_fk FOREIGN KEY(UserID)
+REFERENCES User(ID),
+CONSTRAINT News_fk FOREIGN KEY(NewsID)
+REFERENCES News(ID)
+);
+
+INSERT INTO Feed (Name, Url) VALUES ('YLE', 'http://www.yle.fi/uutiset/rss/uutiset.rss');
+INSERT INTO Feed (Name, Url) VALUES ('MTV3', 'http://www.mtv3.fi/rss/uutiset.rss');
