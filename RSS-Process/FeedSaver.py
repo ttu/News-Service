@@ -1,16 +1,14 @@
 import time
+import datetime
 
 class FeedSaver():
 
-	__db = None 
+	__repo = None 
 	__queue = None
 	__keepAlive = True
-	__query = "SELECT * FROM News WHERE Url='{0}'"
-	__insert = "INSERT INTO News (Title, Url, FeedID, Date) \
-				VALUES ('{0}', '{1}', {2}, '{3}');"
-	
-	def __init__(self, db, queue):
-		self.__db = db
+		
+	def __init__(self, repo, queue):
+		self.__repo = repo
 		self.__queue = queue
 		
 	def execute(self, sleepTime):
@@ -19,15 +17,14 @@ class FeedSaver():
 			while not self.__queue.empty():
 				e = self.__queue.get()
 				# check if url in db
-				result = self.__db.getResults(self.__query.format(e[1]))
+				result = self.__repo.getNews(e[1])
 				if result == ():
 					counter = counter + 1
-					self.__db.executeStatemement(
-						self.__insert.format(
-							e[0].replace("'", ""), e[1], e[2], e[3]))
+					self.__repo.addNews(
+							e[0].replace("'", ""), e[1], e[2], e[3])
 							
 			if counter > 0:
-				print "Saved rows: {0}".format(counter)
+				print "{0} - Saved rows: {1}".format(datetime.datetime.utcnow(), counter)
 				
 			time.sleep(sleepTime)
 			

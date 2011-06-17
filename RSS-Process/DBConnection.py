@@ -37,10 +37,8 @@ class DBConnectionDummy():
 	def connect(self, hostName, userName, pwd, dbName):
 		pass
 	
-	# Should be able to define return value
 	def getResults(self, query):
-		return [(0,"http://www.yle.fi/uutiset/rss/uutiset.rss"),
-				(1, "http://www.mtv3.fi/rss/uutiset.rss")]
+		pass
 		
 	def executeStatemement(self, statement):
 		pass

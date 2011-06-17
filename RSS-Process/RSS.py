@@ -4,14 +4,16 @@ from MyFeedParser import Feedparser
 from RSSReader import RSSReader
 from FeedSaver import FeedSaver
 from multiprocessing import Process, Queue
+import NewsRepository
 
 def main():
 	fp = Feedparser()
-	db = DBConnection("", "", "", "")
+	db = DBConnection("localhost", "root", "", "NewsService")
+	repo = NewsRepository.NewsRepository(db)
 	q = Queue()
 	
-	rss = RSSReader(db, fp, q)
-	saver = FeedSaver(db, q)
+	rss = RSSReader(repo, fp, q)
+	saver = FeedSaver(repo, q)
 	
 	readerProcess = Process(target=rss.execute, args=(10,))
 	readerProcess.start()

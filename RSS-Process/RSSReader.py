@@ -2,20 +2,19 @@ import time
 
 class RSSReader():
 
-	__database = None
+	__repo = None
 	__fp = None
 	__queue = None
 	__keepAlive = True
-	__query = "SELECT ID, Url FROM Feed"
 	
-	def __init__(self, dbcon, feedp, queue):	
-		self.__database = dbcon
+	def __init__(self, repo, feedp, queue):	
+		self.__repo = repo
 		self.__fp = feedp
 		self.__queue = queue
 		
 	def execute(self, sleepTime):
 		while self.__keepAlive:			
-			result = self.__database.getResults(self.__query)
+			result = self.__repo.getFeeds()
 			for record in result:
 				# TODO: Should this be done is separate thread?
 				d = self.__fp.parse(record[1])
