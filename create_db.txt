@@ -2,11 +2,13 @@ DROP TABLE User;
 DROP TABLE Feed;
 DROP TABLE News;
 DROP TABLE Vote;
+DROP TABLE UserMatch;
+DROP TABLE TempMatch;
+DROP TABLE Stats;
 
 CREATE TABLE User(
 ID int PRIMARY KEY AUTO_INCREMENT,
-Username varchar(255) NOT NULL,
-Password varchar(255) NOT NULL
+Name varchar(255) NOT NULL
 );
 
 CREATE TABLE Feed(
@@ -17,8 +19,8 @@ Url varchar(255) NOT NULL
 
 CREATE TABLE News(
 ID int PRIMARY KEY AUTO_INCREMENT,
-Title varchar(255) NOT NULL,
-Url varchar(255) NOT NULL,
+Title varchar(1000) NOT NULL,
+Url varchar(2000) NOT NULL,
 FeedID int NOT NULL,
 Date datetime NOT NULL,
 CONSTRAINT Feed_fk FOREIGN KEY(FeedID)
@@ -26,7 +28,7 @@ REFERENCES Feed(ID)
 );
 
 CREATE TABLE Vote(
-UserID nvarchar(255) NOT NULL,
+UserID int NOT NULL,
 NewsID int NOT NULL,
 Rate bool NOT NULL,
 Date datetime NOT NULL,
@@ -35,6 +37,34 @@ CONSTRAINT User_fk FOREIGN KEY(UserID)
 REFERENCES User(ID),
 CONSTRAINT News_fk FOREIGN KEY(NewsID)
 REFERENCES News(ID)
+);
+
+CREATE TABLE UserMatch(
+UserID_1 int NOT NULL,
+UserID_2 int NOT NULL,
+Matches int NOT NULL,
+Misses int NOT NULL,
+Date datetime NOT NULL,
+PRIMARY KEY (UserID_1, UserID_2),
+CONSTRAINT User1_fk FOREIGN KEY(UserID_1)
+REFERENCES User(ID),
+CONSTRAINT User2_fk FOREIGN KEY(UserID_2)
+REFERENCES User(ID)
+);
+
+CREATE TABLE TempMatch(
+UserID_1 int NOT NULL,
+UserID_2 int NOT NULL,
+Value int NOT NULL,
+PRIMARY KEY (UserID_1, UserID_2),
+CONSTRAINT User1_fk FOREIGN KEY(UserID_1)
+REFERENCES User(ID),
+CONSTRAINT User2_fk FOREIGN KEY(UserID_2)
+REFERENCES User(ID)
+);
+
+CREATE TABLE Stats(
+LastUpdated datetime
 );
 
 INSERT INTO Feed (Name, Url) VALUES ('YLE', 'http://www.yle.fi/uutiset/rss/uutiset.rss');
