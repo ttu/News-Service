@@ -6,6 +6,7 @@ import random
 import datetime
 import DBConnection
 import NewsRepository
+import MatchProcessor
 
 class DummyDataGenerator():
 	
@@ -71,18 +72,43 @@ class DummyDataGenerator():
 		return "{0}-{1}-{2} 12:13:34".format(year, month, day)
 		
 def main():
-	db = DBConnection.DBConnection("localhost", "root", "", "NewsService_Test")
+	generateData()
+	countMathces()
+
+def generateData():
+	db = DBConnection.DBConnection("", "", "", "")
 	repo = NewsRepository.NewsRepository(db)
 	ddg = DummyDataGenerator(repo)
 
 	start = datetime.datetime.utcnow()
 	
-	ddg.generateUsers(2000)
-	repo.userCount = 2000
+	ddg.generateUsers(200)
+	#repo.userCount = 20
 	ddg.generateFeeds(40)
-	ddg.generateNews(5000, 40, "2011-06-01")
-	repo.newsCount = 5000
-	ddg.generateVotes(200, "2011-06-01")
+	ddg.generateNews(500, 40, "2011-06-01")
+	#repo.newsCount = 50
+	ddg.generateVotes(30, "2011-06-01")
+	
+	ddg.generateNews(300, 40, "2011-06-02")
+	ddg.generateVotes(20, "2011-06-02")
+	
+	ddg.generateNews(300, 40, "2011-06-03")
+	ddg.generateVotes(25, "2011-06-03")
+	
+	end = datetime.datetime.utcnow()
+	timdelta = end - start
+	
+	print timdelta
+	
+def countMathces():
+	db = DBConnection.DBConnection("", "", "", "")
+	repo = NewsRepository.NewsRepository(db)
+	mp = MatchProcessor.MatchProcessor(repo)
+	
+	start = datetime.datetime.utcnow()
+	mp.countUserMatches("2011-06-01")
+	mp.countUserMatches("2011-06-02")
+	mp.countUserMatches("2011-06-03")
 	
 	end = datetime.datetime.utcnow()
 	timdelta = end - start

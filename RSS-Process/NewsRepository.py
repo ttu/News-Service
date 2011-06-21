@@ -1,17 +1,29 @@
+import sys
+
 class NewsRepository():
 
 	__getFeedsQuery = "SELECT ID, Url FROM Feed"
 	__getNewsQuery = "SELECT * FROM News WHERE Url='{0}'"
 	__getAllNewsQuery = "SELECT * FROM News"
 	__getUsersQuery = "SELECT * FROM User"
+	__getVotesQuery = "SELECT UserID, NewsID, Rate FROM Vote WHERE Date = '{0}'"
+	__getVotesWithNewsIDQuery = "SELECT UserID, NewsID, Rate FROM Vote WHERE NewsID = {0}"
 	__getUserQuery = "SELECT * FROM User WHERE Name='{0}'"
+	__getUserVotes = "SELECT Rate FROM Votes WHERE UserID = {0} AND NewsID = {0}"
+	__getTempMatches = "SELECT * FROM TempMatch"
+	__getMatchValues = "SELECT Matches, Misses FROM UserMatch WHERE UserID_1 = {0} AND UserID_2 = {1}"
 	
 	__insertFeed = "INSERT INTO Feed (Name, Url) VALUES ('{0}', '{1}');"
 	__insertUser = "INSERT INTO User (Name) VALUES ('{0}');"
 	__insertNews = "INSERT INTO News (Title, Url, FeedID, Date) \
 				VALUES ('{0}', '{1}', {2}, '{3}');"
 	__insertVote = "INSERT INTO Vote (UserID, NewsID, Rate, Date) VALUES ({0}, {1}, {2}, '{3}');"
-				
+	__insertTemp = "INSERT INTO TempMatch VALUES ({0}, {1}, {2});"
+	__insertLastUpdated = "INSERT INTO Stats (LastUpdated) VALUES ('{0}');"
+	
+	__replaceUserMatches = "REPLACE INTO UserMatch VALUES ({0}, {1}, {2}, {3}, '{4}');"
+	__deleteTempMatches = "DELETE FROM TempMatch WHERE 1=1"
+	
 	def __init__(self, db):
 		self.db = db
 		
@@ -32,7 +44,11 @@ class NewsRepository():
 		self.db.executeStatemement(
 			self.__insertVote.format(
 				userID, newsID, rate, date))
-				
+	
+	def addTempMatch(self, userID_1, userID_2, value):
+		self.db.executeStatemement(self.__insertTemp.format(
+			userID_1, userID_2, value))
+		
 	def getUser(self, name):
 		return self.db.getResults(self.__getNewsQuery.format(name))
 	
@@ -50,16 +66,33 @@ class NewsRepository():
 		
 	def getFeeds(self):
 		return self.db.getResults(self.__getFeedsQuery)
+	
+	def getVotes(self, date):
+		return self.db.getResults(self.__getVotesQuery.format(date))
+	
+	def getVotesWithNewsID(self, newsID):
+		return self.db.getResults(self.__getVotesWithNewsIDQuery.format(newsID)) 
+		
+	def getTempMatches(self):
+		return self.db.getResults(self.__getTempMatches)
+		
+	def getMatchValues(self, userID_1, userID_2):
+		return self.db.getResults(self.__getMatchValues.format(userID_1, userID_2))
+		
+	def deleteTempMatches(self):
+		self.db.executeStatemement(self.__deleteTempMatches)
+		
+	def insertOrUpdateUserMatch(self, userID_1, userID_2, match, miss, date):
+		self.db.executeStatemement(self.__replaceUserMatches.format(userID_1, userID_2, match, miss, date))
+		
+	def updateLastUpdated(self, date):
+		self.db.executeStatemement(self.__insertLastUpdated.format(date))
 		
 	def __getResultCount(self, query):
 		result = self.db.getResults(query)
 		if result == None:
 			return 0
 		return len(result)
-	
-	def countUserMatches(self, date):
-		pass
-			
 		
 class NewsRepositoryDummy():
 
@@ -103,5 +136,14 @@ class NewsRepositoryDummy():
 	def getFeeds(self):
 		return self.feeds
 	
-	def countUserMatches(self, date):
+	def getTempMatches(self):
+		pass
+		
+	def getMatchValues(self, userID_1, userID_2):
+		pass
+		
+	def deleteTempMatches(self):
+		pass
+		
+	def insertOrUpdateUserMatch(self, userID_1, userID_2, match, miss):
 		pass

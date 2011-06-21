@@ -8,7 +8,7 @@ import NewsRepository
 
 def main():
 	fp = Feedparser()
-	db = DBConnection("localhost", "root", "", "NewsService")
+	db = DBConnection("", "", "", "")
 	repo = NewsRepository.NewsRepository(db)
 	q = Queue()
 	
