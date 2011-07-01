@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if news_list %}
+    <ul>
+    {% for news in news_list %}
+        <li>{{ news.title }}</li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    You don't have webnotes
+    {% endif %}
+{% endblock %}
